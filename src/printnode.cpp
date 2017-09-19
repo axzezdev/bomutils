@@ -74,7 +74,7 @@ void print_node(std::ostream& output, std::string const& base, std::string const
     if (S_ISDIR(s.st_mode)) {
         DIR*           d = ::opendir(fullpath.c_str());
         struct dirent* dir;
-        while ((dir = ::readdir(d)) != NULL) {
+        while ((dir = ::readdir(d)) != nullptr) {
             if (dir->d_name[0] != '.') {
                 std::string new_path(path);
                 new_path += std::string("/") + std::string(dir->d_name);

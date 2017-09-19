@@ -185,6 +185,7 @@ int main(int argc, char* argv[]) {
     if (listType == 0) {
         listType = LIST_ALL;
     }
+    
     if (!params[0]) {
         std::strcpy(params, "fm/scl0");
         suppressDevSize = true;
@@ -236,22 +237,23 @@ int main(int argc, char* argv[]) {
             BOMVar* var = (BOMVar*)ptr;
             
             uint32_t varDataLength;
-            char*    varData      = ::lookup(var->index, &varDataLength);
+            char*    varData      = lookup(var->index, &varDataLength);
             BOMTree* tree         = (BOMTree*)varData;
             std::string   name    = std::string(var->name, var->length);
             
             DEBUG(2, "BOMVar 0x" << std::hex << ntohl(var->index) << ' ' << name << ':');
             
             if (name == "Paths") {
-                BOMPaths* paths = (BOMPaths*)::lookup(tree->child);
+                BOMPaths* paths = (BOMPaths*)lookup(tree->child);
                 
                 typedef std::map<uint32_t, std::string> filenames_t;
                 typedef std::map<uint32_t, uint32_t> parents_t;
-                filenames_t                     filenames;
-                parents_t                       parents;
+                
+                filenames_t filenames;
+                parents_t parents;
                 
                 while (paths->isLeaf == htons(0)) {
-                    paths = (BOMPaths*)::lookup(paths->indices[0].index0);
+                    paths = (BOMPaths*)lookup(paths->indices[0].index0);
                 }
                 
                 while (paths) {
@@ -259,10 +261,10 @@ int main(int argc, char* argv[]) {
                         uint32_t index0 = paths->indices[j].index0;
                         uint32_t index1 = paths->indices[j].index1;
                         
-                        BOMFile*      file  = (BOMFile*)::lookup(index1);
-                        BOMPathInfo1* info1 = (BOMPathInfo1*)::lookup(index0);
+                        BOMFile*      file  = (BOMFile*)lookup(index1);
+                        BOMPathInfo1* info1 = (BOMPathInfo1*)lookup(index0);
                         uint32_t      length2;
-                        BOMPathInfo2* info2 = (BOMPathInfo2*)::lookup(info1->index, &length2);
+                        BOMPathInfo2* info2 = (BOMPathInfo2*)lookup(info1->index, &length2);
                         
                         // Compute full name
                         std::string filename      = file->name;
@@ -349,7 +351,7 @@ int main(int argc, char* argv[]) {
                                                     std::cout << std::dec << ntohl(info2->modtime);
                                                     continue;
                                                 case 'T':
-                                                    error("Formated mod time not yet supported");
+                                                    error("Formatted mod time not yet supported");
                                                     break;
                                                 case 'c':
                                                     std::cout << std::dec << ntohl(info2->checksum);
@@ -364,7 +366,7 @@ int main(int argc, char* argv[]) {
                                                     std::cout << std::dec << ntohl(info2->size);
                                                     continue;
                                                 case 'S':
-                                                    error("Formated size not yet supported");
+                                                    error("Formatted size not yet supported");
                                                     break;
                                             }
                                         }
@@ -444,7 +446,7 @@ int main(int argc, char* argv[]) {
                     if (paths->forward == htonl(0)) {
                         paths = 0;
                     } else {
-                        paths = (BOMPaths*)::lookup(paths->forward);
+                        paths = (BOMPaths*)lookup(paths->forward);
                     }
                 }
             }

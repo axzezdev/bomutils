@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    char*     buffer;
+    char*          buffer;
     std::streampos file_length;
     {
         std::ifstream bom_file(argv[1], std::ios::binary | std::ios::in);
@@ -288,7 +288,7 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-
+    
     delete[] buffer;
     return 0;
 }
