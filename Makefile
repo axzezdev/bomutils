@@ -23,7 +23,7 @@ CXX=g++
 PREFIX=/usr
 
 SUFFIX=
-CXXFLAGS=-Wall
+CXXFLAGS=-Wall -std=c++14 -stdlib=libc++
 LIBS=
 
 BIN_DIR=$(PREFIX)/bin

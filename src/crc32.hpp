@@ -22,8 +22,7 @@
 */
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-uint32_t calc_crc32( const char * file_path );
-
-uint32_t calc_str_crc32(const char * str);
+uint32_t calc_crc32(const char* file_path);
+uint32_t calc_str_crc32(const char* str);
