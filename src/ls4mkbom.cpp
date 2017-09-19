@@ -27,8 +27,6 @@
 #include <cstdlib>
 #include "printnode.hpp"
 
-// using namespace std;
-
 void usage() {
     std::cout << "Usage: ls4mkbom [-u uid] [-g gid] path" << std::endl << std::endl;
     std::cout << "\t-u\tForce user ID to the specified value" << std::endl;

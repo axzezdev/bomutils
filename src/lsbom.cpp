@@ -38,8 +38,6 @@
 #include <unistd.h> // For getopt
 #include <cctype>
 
-// using namespace std;
-
 // Pass -D to enable debug outputs
 #define DEBUG(level, msg)                                                                          \
     if (level <= debug) {                                                                          \

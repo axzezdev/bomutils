@@ -34,8 +34,6 @@
 
 #include "bom.h"
 
-// using namespace std;
-
 void print_paths(BOMPaths* paths, char* buffer, BOMBlockTable* block_table, unsigned int id) {
     paths->isLeaf   = ntohs(paths->isLeaf);
     paths->count    = ntohs(paths->count);

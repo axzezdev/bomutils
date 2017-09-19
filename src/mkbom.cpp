@@ -45,8 +45,6 @@
 #include "bom.h"
 #include "printnode.hpp"
 
-// using namespace std;
-
 typedef enum { kNullNode, kFileNode, kDirectoryNode, kSymbolicLinkNode, kRootNode } tNodeType;
 
 struct Node {

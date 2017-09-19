@@ -36,8 +36,6 @@
 #include "crc32.hpp"
 #include "crc32_poly.hpp"
 
-// using namespace std;
-
 /* 512k default buffer size */
 #define BUFFER_SIZE 512 * 1024
 

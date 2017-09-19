@@ -35,8 +35,6 @@
 #include "printnode.hpp"
 #include "crc32.hpp"
 
-// using namespace std;
-
 /* on unix system_path = path; on windows system_path is the windows native path format of path */
 void print_node(std::ostream& output, std::string const& base, std::string const& system_path, std::string const& path,
                 uint32_t uid, uint32_t gid) {
