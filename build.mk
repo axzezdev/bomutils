@@ -19,7 +19,7 @@
 #
 #  Initial work done by Joseph Coffland and Julian Devlin.
 #  Numerous further improvements by Baron Roberts.
-OPTFLAGS=-O2 -g0 -s
+OPTFLAGS=-O2 -g0 -mtune=native
 
 APP_SOURCES=\
 	mkbom.cpp \
