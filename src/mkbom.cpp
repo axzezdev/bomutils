@@ -45,10 +45,28 @@
 #include "bom.h"
 #include "printnode.hpp"
 
-typedef enum { kNullNode, kFileNode, kDirectoryNode, kSymbolicLinkNode, kRootNode } tNodeType;
+typedef enum {
+    kNullNode,
+    kFileNode,
+    kDirectoryNode,
+    kSymbolicLinkNode,
+    kRootNode } tNodeType;
+
+struct Node;
+
+using stringnode_map_t = std::map<std::string, Node>;
+using stringvec_t = std::vector<std::string>;
+
+using map_iterator_t = std::map<std::string, Node>::iterator;
+using map_citerator_t = std::map<std::string, Node>::const_iterator;
+using vec_citerator_t = std::vector<std::string>::const_iterator;
+
+using node_stackpair_t = std::pair<uint32_t, const Node*>;
+using node_stack_t = std::vector<node_stackpair_t>;
+
 
 struct Node {
-    std::map<std::string, Node> children;
+    stringnode_map_t  children;
     tNodeType         type;
     uint32_t          mode;
     uint32_t          uid;
@@ -173,7 +191,7 @@ class BOMStorage {
         void write(std::ofstream& bom_file) {
             bom_file.write((char*)header, size_of_header);
             bom_file.write((char*)vars, size_of_vars);
-            if (entries != NULL) {
+            if (entries != nullptr) {
                 bom_file.write((char*)entries, entry_size);
             }
             BOMBlockTable* temp = (BOMBlockTable*)std::malloc(size_of_block_table);
@@ -217,12 +235,12 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
     unsigned int num;
     root.type = kRootNode;
     {
-        std::map<std::string, Node> all_nodes;
+        stringnode_map_t all_nodes;
         std::string            line;
         while (std::getline(lsbom_file, line)) {
             Node                     n;
             std::string              name;
-            std::vector<std::string> elements;
+            stringvec_t elements;
             {
                 std::stringstream ss(line);
                 std::getline(ss, name, '\t');
@@ -268,23 +286,22 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
             all_nodes[name] = n;
         }
         /* create tree */
-        for (std::map<std::string, Node>::const_iterator it = all_nodes.begin(); it != all_nodes.end();
-             ++it) {
-            std::vector<std::string> path_elements;
+        for (map_citerator_t it = all_nodes.begin(); it != all_nodes.end(); ++it) {
+            stringvec_t path_elements;
             {
                 std::stringstream ss(it->first);
                 for (std::string element; std::getline(ss, element, '/'); path_elements.push_back(element)) {}
             }
             Node*       parent = &root;
             std::string full_path;
-            for (std::vector<std::string>::const_iterator jt = path_elements.begin();
-                 jt != path_elements.end(); ++jt) {
+            for (vec_citerator_t jt = path_elements.begin(); jt != path_elements.end(); ++jt) {
                 full_path += *jt;
                 /* search for this path element */
-                std::map<std::string, Node>::iterator kt;
+                map_iterator_t kt;
                 if ((kt = parent->children.find(*jt)) == parent->children.end()) {
                     /* this node was not found in the parent, we must create it */
-                    std::map<std::string, Node>::const_iterator lt;
+                    // std::map<std::string, Node>::const_iterator lt;
+                    map_citerator_t lt;
                     if ((lt = all_nodes.find(full_path)) == all_nodes.end()) {
                         std::cerr << std::endl
                                   << "Parent directory of file/folder \"" << full_path
@@ -324,7 +341,7 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
         tree.blockSize = htonl(4096);
         tree.pathCount = htonl(num);
         tree.unknown3  = 0; /* ?? */
-
+        
         unsigned int num_paths = std::ceil(static_cast<double>(num) / 256.);
         /* split the paths into several paths */
         unsigned int path_size = (sizeof(uint16_t) * 2) + (sizeof(uint32_t) * 2) + (num_paths * sizeof(BOMPathIndices));
@@ -334,9 +351,9 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
         root_paths->forward  = 0;
         root_paths->backward = 0;
         
-        std::vector<std::pair<uint32_t, const Node*>> stack;
+        node_stack_t stack;
         
-        stack.push_back(std::pair<uint32_t, const Node*>(0, &root));
+        stack.push_back(node_stackpair_t(0, &root));
         unsigned int j                 = 0;
         unsigned int k                 = 0;
         unsigned int current_path      = 0;
@@ -348,7 +365,7 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
             const Node& arg    = *stack[0].second;
             uint32_t    parent = stack[0].first;
             stack.erase(stack.begin());
-            for (std::map<std::string, Node>::const_iterator it = arg.children.begin(); it != arg.children.end(); ++it) {
+            for (map_citerator_t it = arg.children.begin(); it != arg.children.end(); ++it) {
                 Node const& node = it->second;
                 std::string s    = it->first;
                 
@@ -410,7 +427,7 @@ void write_bom(std::istream& lsbom_file, std::string const& output_path) {
                 paths->indices[k].index1 = last_file_info = htonl(bom.addBlock(f, bom_file_size));
                 std::free((void*)f);
                 
-                stack.push_back(std::pair<uint32_t, const Node*>(j + 1, &node));
+                stack.push_back(node_stackpair_t(j + 1, &node));
                 j++;
                 k = (k + 1) % 256;
             }

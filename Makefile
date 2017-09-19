@@ -19,11 +19,12 @@
 #
 #  Initial work done by Joseph Coffland and Julian Devlin.
 #  Numerous further improvements by Baron Roberts.
-CXX=g++
+# CXX=g++
+CXX=clang++
 PREFIX=/usr
 
 SUFFIX=
-CXXFLAGS=-Wall -std=c++14 -stdlib=libc++
+CXXFLAGS=-Wall -Werror -std=c++14 -stdlib=libc++
 LIBS=
 
 BIN_DIR=$(PREFIX)/bin

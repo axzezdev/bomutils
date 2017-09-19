@@ -81,7 +81,7 @@ uint32_t calc_crc32(const char* file_path) {
     
     unsigned int buffer_size = (file_length < BUFFER_SIZE) ? file_length : BUFFER_SIZE;
     uint8_t*     buffer      = new uint8_t[buffer_size];
-    if (buffer == NULL) {
+    if (buffer == nullptr) {
 #if defined(WINDOWS)
         CloseHandle((HANDLE)f);
 #else
@@ -94,8 +94,7 @@ uint32_t calc_crc32(const char* file_path) {
     int64_t  file_pos = 0;
     uint32_t crc      = 0;
     while (file_pos < file_length) {
-        int bytes =
-            ((file_length - file_pos) < BUFFER_SIZE) ? (file_length - file_pos) : BUFFER_SIZE;
+        int bytes = ((file_length - file_pos) < BUFFER_SIZE) ? (file_length - file_pos) : BUFFER_SIZE;
         off_t buf_pos = 0;
         while (buf_pos < bytes) {
 #if defined(WINDOWS)
@@ -115,7 +114,7 @@ uint32_t calc_crc32(const char* file_path) {
                 std::exit(1);
             } else if (r < 0) {
                 std::cerr << "IO error (" << r << ") while calculating checksum of file \"" << file_path
-                     << "\"!" << std::endl;
+                          << "\"!" << std::endl;
                 ::close(f);
                 std::exit(1);
             } else {
@@ -128,8 +127,6 @@ uint32_t calc_crc32(const char* file_path) {
         }
         file_pos += bytes;
     }
-
-    /* cksum.c also calculates the crc-32 on the length of the file */
     while (file_length > 0) {
         crc = crc_table[(((uint64_t)file_length) & 0xFF) ^ ((crc >> 24) & 0xFF)] ^ (crc << 8);
         file_length >>= 8;
@@ -147,12 +144,10 @@ uint32_t calc_crc32(const char* file_path) {
 
 uint32_t calc_str_crc32(const char* str) {
     std::size_t   num_bytes = std::strlen(str);
-    uint32_t crc       = 0;
+    uint32_t      crc       = 0;
     for (std::size_t i = 0; i < num_bytes; ++i) {
         crc = crc_table[str[i] ^ ((crc >> 24) & 0xFF)] ^ (crc << 8);
     }
-    
-    /* cksum.c also calculates the crc-32 on the length of the file */
     while (num_bytes > 0) {
         crc = crc_table[(((uint64_t)num_bytes) & 0xFF) ^ ((crc >> 24) & 0xFF)] ^ (crc << 8);
         num_bytes >>= 8;
