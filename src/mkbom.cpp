@@ -50,7 +50,7 @@ typedef enum {
     kFileNode,
     kDirectoryNode,
     kSymbolicLinkNode,
-    kRootNode } tNodeType;
+    kRootNode } node_enum_t;
 
 struct Node;
 
@@ -67,7 +67,7 @@ using node_stack_t = std::vector<node_stackpair_t>;
 
 struct Node {
     stringnode_map_t  children;
-    tNodeType         type;
+    node_enum_t       type;
     uint32_t          mode;
     uint32_t          uid;
     uint32_t          gid;
